@@ -35,6 +35,7 @@ your repo access and to practice PR'ing with your team *before* you start
 coding!
 
 - Camille Onoda: [GitHub](https://github.com/CamilleOnoda) / [LinkedIn](https://linkedin.com/in/camilleonoda)
+- Yusuf Mohsen: [GitHub](https://github.com/yusufmohsiin) / [LinkedIn](https://www.linkedin.com/in/yusuf-mohsiin)
 - Teammate name #2: [GitHub](https://github.com/ghaccountname) / [LinkedIn](https://linkedin.com/in/liaccountname)
 
    ...
