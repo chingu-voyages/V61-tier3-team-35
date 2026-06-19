@@ -1,25 +1,17 @@
 import { createBrowserRouter } from 'react-router-dom'
+import MainLayout from '../layouts/MainLayout.jsx'
 // Pages
-import App from '../App.jsx'
-import Home from '../pages/Home.jsx'
-import Gameplay from '../pages/Gameplay.jsx'
-import Dashboard from '../pages/Dashboard.jsx'
+import { Children } from 'react'
+import Game from '../pages/Game.jsx'
 
 export const router = createBrowserRouter([
     {
-        path: "/",
-        element: <App />
-    },
-    {
-        path: "/home",
-        element: <Home />
-    },
-    {
-        path: "/gameplay",
-        element: <Gameplay />
-    },
-    {
-        path: "/dashboard",
-        element: <Dashboard />
+        element: <MainLayout />,
+        children: [
+            {
+                path: "/",
+                element: <Game />
+            }
+        ]
     }
-])
+]);
