@@ -1,15 +1,13 @@
 import Tile from "./Tile"
 
-export default function Board({ className }) {
-    const rows = Array(6).fill(null);
-    const cols = Array(5).fill(null);
+export default function Board({ className, board }) {
 
     return (
         <div className={`flex flex-col gap-2 ${className}`}>
-            {rows.map((row, rowIndex) => (
+            {board.map((row, rowIndex) => (
                 <div key={rowIndex} className="grid grid-cols-5 gap-2 w-fit">
-                    {cols.map((col, colIndex) => (
-                        <Tile key={colIndex} />
+                    {row.map((tile, colIndex) => (
+                        <Tile key={colIndex} letter={tile.letter} status={tile.status}/>
                     ))}
                 </div>
             ))}

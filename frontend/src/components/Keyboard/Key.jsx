@@ -1,5 +1,18 @@
-export default function Key(){
+import { Delete } from "lucide-react";
+
+
+const statuses =
+{
+    correct: "text-white border-none bg-lime-500",
+    present: "text-white border-none bg-yellow-400",
+    absent: "text-white border-none bg-gray-400",
+}
+
+export default function Key({ text, onClick, className, status }) {
     return (
-        <div>Key</div>
+        <button className={`${statuses[status]} ${className} bg-gray-200 hover:bg-gray-300 focus:bg-gray-300 px-5 py-4 rounded-md font-extrabold text-gray-700 uppercase duration-300 transition-colors`} onClick={onClick}>
+            {text === "Backspace" && <Delete />}
+            {text !== "Backspace" && text}
+        </button>
     )
 }
