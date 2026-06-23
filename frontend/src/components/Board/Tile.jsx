@@ -1,5 +1,15 @@
-export default function Tile(){
+const statuses =
+{
+    correct: "text-white border-none bg-lime-500",
+    present: "text-white border-none bg-yellow-400",
+    absent: "text-white border-none bg-gray-400",
+}
+
+
+export default function Tile({ letter, status }) {
+
+
     return (
-        <div className="size-14 border border-gray-400"></div>
+        <div className={`uppercase  flex items-center justify-center text-2xl font-bold size-14 border  ${statuses[status]} bg-gray-50 ${letter ? "border-black border-2" : "border-gray-400"}`}>{letter}</div>
     )
 }
