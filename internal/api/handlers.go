@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"time"
 
@@ -37,7 +38,9 @@ func (h *Handler) GetDailyWord(w http.ResponseWriter, r *http.Request) {
 	}
 
 	dailyWord := game.GetDailyWord(h.answers)
-	today := time.Now().String()
+	log.Printf("Today's word: %s", dailyWord)
+
+	today := time.Now().Format(time.DateOnly)
 	wordLength := len(dailyWord)
 	maxAttempts := 6
 
