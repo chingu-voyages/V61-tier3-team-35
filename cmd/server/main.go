@@ -28,7 +28,8 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /admin/health", handlerReadiness)
-	mux.HandleFunc("GET /api/daily-word", handler.HandlerDailyWord)
+	mux.HandleFunc("GET /api/daily-word", handler.GetDailyWord)
+	mux.HandleFunc("POST /api/guess", handler.EvaluateGuess)
 
 	srv := &http.Server{
 		Addr:    ":" + port,
