@@ -33,7 +33,7 @@ func main() {
 
 	srv := &http.Server{
 		Addr:    ":" + port,
-		Handler: mux,
+		Handler: api.CorsMiddleware(mux),
 	}
 	log.Printf("Server started on port: %v", srv.Addr)
 	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
