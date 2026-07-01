@@ -3,7 +3,7 @@ import Tile from "./Tile"
 export default function Board({ className, board }) {
 
     return (
-        <div className={`flex flex-col gap-2 ${className}`}>
+        <div className={`mt-10 flex flex-col gap-2 ${className}`}>
             {board.map((row, rowIndex) => (
                 <div key={rowIndex} className="grid grid-cols-5 gap-2 w-fit">
                     {row.map((tile, colIndex) => (

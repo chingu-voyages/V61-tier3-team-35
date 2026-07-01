@@ -7,7 +7,7 @@ import KeyboardRows from "./keyboardRows"
 export default function ({ activeKey, handleKeyPress, keyboardStatuses }) {
 
     return (
-        <article className="flex flex-col items-center gap-1.5 py-10 w-full">
+        <article className="flex flex-col items-center gap-1.5 mb-10 w-full">
             {KeyboardRows.map((row, rowIndex) => (
                 <div key={rowIndex} className="flex gap-1.5">
                     {row.map((key, index) => (
