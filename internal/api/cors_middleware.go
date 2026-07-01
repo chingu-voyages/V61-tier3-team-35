@@ -18,8 +18,7 @@ func CorsMiddleware(next http.Handler) http.Handler {
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 		if r.Method == http.MethodOptions {
-			respondWithError(w, http.StatusMethodNotAllowed,
-				"method not allowed", nil)
+			w.WriteHeader(http.StatusNoContent)
 			return
 		}
 
