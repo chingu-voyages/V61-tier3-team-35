@@ -38,6 +38,7 @@ export default function () {
     const [gameStatus, setGameStatus] = useState("playing")
     const [showWinModal, setShowWinModal] = useState(false)
     const [showLoseModal, setShowLoseModal] = useState(false)
+    const [isSubmitting, setIsSubmitting] = useState(false)
 
     useEffect(() => {
 
@@ -56,28 +57,23 @@ export default function () {
 
 
     const handleKeyPress = (key) => {
+        if (gameStatus !== "playing" || isSubmitting) return
 
-        if (gameStatus !== "complete") {
+        setKeyValue(key)
 
-            setKeyValue(key)
+        // col - letters
+        // rows - guesses
 
-            // col - letters
-            // rows - guesses
-
-            if (key === "Backspace") {
-                handleBackspace()
-            }
-            else if (key === "Enter") {
-                submitGuess()
-            }
-            else {
-                handleLetter(key)
-            }
+        if (key === "Backspace") {
+            handleBackspace()
         }
-
+        else if (key === "Enter") {
+            submitGuess()
+        }
         else {
-            console.log("round complete")
+            handleLetter(key)
         }
+
     }
 
     // Handle letter
@@ -122,15 +118,20 @@ export default function () {
     }
 
     // Submit Guess
-    const submitGuess = () => {
+    const submitGuess = async () => {
+
+        if (isSubmitting) { return }
 
         if (currCol === 5 && currRow < 6) {
+            setIsSubmitting(true)
             // Check the status of letters in guess word - api call
-            checkGuess()
+            await checkGuess()
 
             // Set col to 0 and move to next row
             setCurrCol(0)
             setCurrRow(prev => prev + 1)
+            // when checkGuess has run, set IsSubmitting to false
+            setIsSubmitting(false)
         }
 
     }
@@ -163,7 +164,22 @@ export default function () {
         const guessStatus = data?.feedback;
         const isCorrect = data?.is_correct;
 
+        const newKeyboardStatuses = { ...keyboardStatuses }
+
         for (let i = 0; i < guess.length; i++) {
+
+            const letter = guess[i].letter;
+
+            // Checking if keyboard status is higher than result status for relevant color updates
+            let keyStatus = newKeyboardStatuses[letter]
+            let resultStatus = guessStatus[i].status
+
+            // if key status weight is not higher than resultStatus weight, change key status.
+
+            if (!newKeyboardStatuses[letter] ||
+                !checkKeyStatusWeight(keyStatus, resultStatus)) {
+                newKeyboardStatuses[letter] = guessStatus[i].status
+            }
 
             // Update gameboard status
             newBoard[currRow][i] = {
@@ -173,6 +189,7 @@ export default function () {
 
         }
         setBoard(newBoard)
+        setKeyboardStatuses(newKeyboardStatuses)
 
         if (isCorrect) {
             setGameStatus("won")
@@ -187,9 +204,28 @@ export default function () {
 
     }
 
+    // Checking highest status to update keyboard key's statuses
+    const checkKeyStatusWeight = (keyStatus, resultStatus) => {
+
+        const statuses = {
+            absent: 0,
+            present: 1,
+            correct: 2
+        }
+
+        const keyStatusWeight = statuses[keyStatus]
+        const resultStatusWeight = statuses[resultStatus]
+
+        // returns true or false
+        return keyStatusWeight > resultStatusWeight
+
+    }
+
     // Get new word
     const getNewWord = async () => {
         resetGame()
+
+
         const response = await fetch("https://wordle-grqh.onrender.com/api/daily-word", {
             method: "GET",
             headers: {
@@ -203,6 +239,7 @@ export default function () {
     // Reset Game
     const resetGame = () => {
         setBoard(emptyBoard)
+        setKeyboardStatuses(InitialKeyboardStatuses)
         setShowLoseModal(false)
         setShowWinModal(false)
         setCurrCol(0)
@@ -214,10 +251,10 @@ export default function () {
     return (
         <div className={`flex flex-col items-center relative z-0`}>
             {/* overlay */}
-            {showLoseModal || showWinModal && (<div className="bg-white/70 absolute inset-0 z-10"></div>)}
+            {(showLoseModal || showWinModal) && (<div className="bg-white/70 absolute inset-0 z-10"></div>)}
             {showWinModal && (<WinModal onClose={() => { setShowWinModal(false) }} newGame={getNewWord} />)}
             {showLoseModal && (<LoseModal onClose={() => { setShowLoseModal(false) }} newGame={getNewWord} />)}
-            <div className={`flex flex-col items-center justify-center ${gameStatus === "playing"? "gap-10": "gap-0"}`}>
+            <div className={`flex flex-col items-center justify-center ${gameStatus === "playing" ? "gap-10" : "gap-0"}`}>
                 <Board board={board} />
                 {gameStatus === "won" && (
                     <div className="bg-gray-200 rounded-full p-1 px-2 text-sm font-semibold my-2">You Win! 🏆</div>
