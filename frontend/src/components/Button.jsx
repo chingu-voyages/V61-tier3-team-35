@@ -1,5 +1,8 @@
-export default function Button(){
+export default function Button({ onClick, text, className }) {
+
     return (
-        <div>Button</div>
+        <button onClick={onClick} className={`bg-emerald-600 text-white rounded-md px-4 py-3 text-sm uppercase font-bold ${className}`}>
+            {text}
+        </button>
     )
 }

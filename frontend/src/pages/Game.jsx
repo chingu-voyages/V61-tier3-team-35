@@ -6,6 +6,10 @@ import Keyboard from "../components/Keyboard/Keyboard"
 import keyboardRows from "../components/Keyboard/keyboardRows"
 import mockStatus from "../components/mockStatus"
 
+// Win / lose modal
+import WinModal from "../components/game/WinModal"
+import LoseModal from "../components/game/LoseModal"
+
 // Empty tile 
 const emptyTile = {
     letter: "",
@@ -32,6 +36,8 @@ export default function () {
     const [currCol, setCurrCol] = useState(0)
     const [currRow, setCurrRow] = useState(0)
     const [gameStatus, setGameStatus] = useState("playing")
+    const [showWinModal, setShowWinModal] = useState(false)
+    const [showLoseModal, setShowLoseModal] = useState(false)
 
     useEffect(() => {
 
@@ -106,7 +112,7 @@ export default function () {
             // Clear the  tile
             newBoard[currRow][currCol - 1] = {
                 letter: "",
-                status:""
+                status: ""
             }
             setBoard(newBoard)
 
@@ -127,54 +133,100 @@ export default function () {
             setCurrRow(prev => prev + 1)
         }
 
-        else if (currRow > 5) {
-            setGameStatus("complete")
-        }
-
     }
 
 
     // Check guess
-    const checkGuess = () => {
+    const checkGuess = async () => {
 
         const newBoard = [...board]
         newBoard[currRow] = [...newBoard[currRow]]
 
         const guess = newBoard[currRow];
+        let guessWord = ""
+        for (let i = 0; i < guess.length; i++) {
+            guessWord += newBoard[currRow][i].letter
+        }
 
-        // Looping through the guess
+        const response = await fetch("https://wordle-grqh.onrender.com/api/guess", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                guess: guessWord,
+            }),
+        })
+
+        const data = await response.json()
+
+        const guessStatus = data?.feedback;
+        const isCorrect = data?.is_correct;
 
         for (let i = 0; i < guess.length; i++) {
-            // does the word contain words in mock?
-
-            const letter = newBoard[currRow][i].letter
 
             // Update gameboard status
             newBoard[currRow][i] = {
                 ...newBoard[currRow][i],
-                status: mockStatus[letter] ?? "absent"
+                status: guessStatus[i].status
             }
-
-            if (mockStatus[letter]) {
-                keyboardStatuses[letter] = mockStatus[letter]
-            }
-            else {
-                keyboardStatuses[letter] = "absent"
-            }
-
-
 
         }
         setBoard(newBoard)
 
+        if (isCorrect) {
+            setGameStatus("won")
+            setShowWinModal(true)
+        }
+        else if (!isCorrect) {
+            if (currRow > 4) {
+                setGameStatus("lost")
+                setShowLoseModal(true)
+            }
+        }
+
+    }
+
+    // Get new word
+    const getNewWord = async () => {
+        resetGame()
+        const response = await fetch("https://wordle-grqh.onrender.com/api/daily-word", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+        const data = await response.json();
+
+    }
+
+    // Reset Game
+    const resetGame = () => {
+        setBoard(emptyBoard)
+        setShowLoseModal(false)
+        setShowWinModal(false)
+        setCurrCol(0)
+        setCurrRow(0)
+        setGameStatus("playing")
     }
 
 
-
     return (
-        <div className="flex flex-col items-center">
-            <Board board={board} />
-            <Keyboard activeKey={keyValue} keyboardStatuses={keyboardStatuses} handleKeyPress={handleKeyPress} />
+        <div className={`flex flex-col items-center relative z-0`}>
+            {/* overlay */}
+            {showLoseModal || showWinModal && (<div className="bg-white/70 absolute inset-0 z-10"></div>)}
+            {showWinModal && (<WinModal onClose={() => { setShowWinModal(false) }} newGame={getNewWord} />)}
+            {showLoseModal && (<LoseModal onClose={() => { setShowLoseModal(false) }} newGame={getNewWord} />)}
+            <div className={`flex flex-col items-center justify-center ${gameStatus === "playing"? "gap-10": "gap-0"}`}>
+                <Board board={board} />
+                {gameStatus === "won" && (
+                    <div className="bg-gray-200 rounded-full p-1 px-2 text-sm font-semibold my-2">You Win! 🏆</div>
+                )}
+                {gameStatus === "lost" && (
+                    <div className="bg-gray-200 rounded-full p-1 px-2 text-sm font-semibold my-2">You Lose! 🥲</div>
+                )}
+                <Keyboard activeKey={keyValue} keyboardStatuses={keyboardStatuses} handleKeyPress={handleKeyPress} />
+            </div>
         </div>
     )
 }
