@@ -18,13 +18,18 @@ func main() {
 		port = "8080"
 	}
 
+	validWords, err := game.LoadWords("words/allowed.txt")
+	if err != nil {
+		log.Fatalf("failed to load valid words: %v", err)
+	}
+
 	answers, err := game.LoadWords("words/answers.txt")
 	if err != nil {
-		log.Fatalf("failed to load words: %v", err)
+		log.Fatalf("failed to load answers: %v", err)
 	}
 	log.Printf("Loaded %d words", len(answers))
 
-	handler := api.NewHandler(answers)
+	handler := api.NewHandler(answers, validWords)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /admin/health", handlerReadiness)

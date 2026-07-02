@@ -2,7 +2,6 @@ package game
 
 import (
 	"bufio"
-	"log"
 	"math/rand/v2"
 	"os"
 	"time"
@@ -11,7 +10,7 @@ import (
 func LoadWords(f string) ([]string, error) {
 	file, err := os.Open(f)
 	if err != nil {
-		log.Fatalf("failed to open file: %s", err)
+		return nil, err
 	}
 	defer file.Close()
 
@@ -24,7 +23,7 @@ func LoadWords(f string) ([]string, error) {
 	}
 
 	if err := scanner.Err(); err != nil {
-		log.Fatalf("Error during scanning: %s", err)
+		return nil, err
 	}
 
 	return words, nil
