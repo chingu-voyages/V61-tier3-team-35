@@ -9,7 +9,7 @@ import (
 )
 
 func TestEvaluateGuessHandler_MethodNotAllowed(t *testing.T) {
-	handler := NewHandler([]string{"apple"})
+	handler := NewHandler([]string{"apple"}, []string{"apple", "alley"})
 
 	req := httptest.NewRequest(http.MethodGet, "/api/guess", nil)
 	rec := httptest.NewRecorder()
@@ -21,8 +21,8 @@ func TestEvaluateGuessHandler_MethodNotAllowed(t *testing.T) {
 	}
 }
 
-func TestEvaluateGuessHandler_ReturnsFeedback(t *testing.T) {
-	handler := NewHandler([]string{"apple"})
+func TestEvaluateGuessHandler_ReturnsFeedbackAndSetsClientCookie(t *testing.T) {
+	handler := NewHandler([]string{"apple"}, []string{"apple", "alley"})
 
 	body := bytes.NewBufferString(`{"guess":"alley"}`)
 	req := httptest.NewRequest(http.MethodPost, "/api/guess", body)
@@ -34,16 +34,43 @@ func TestEvaluateGuessHandler_ReturnsFeedback(t *testing.T) {
 		t.Fatalf("expected status %d, got %d", http.StatusOK, rec.Code)
 	}
 
+	cookies := rec.Result().Cookies()
+
+	var clientCookie *http.Cookie
+	for _, cookie := range cookies {
+		if cookie.Name == "client_id" {
+			clientCookie = cookie
+			break
+		}
+	}
+
+	if clientCookie == nil {
+		t.Fatal("expected client_id cookie to be set")
+	}
+
+	if clientCookie.Value == "" {
+		t.Fatal("expected client_id cookie value not to be empty")
+	}
+
 	var response struct {
 		Feedback []struct {
 			Letter string `json:"letter"`
 			Status string `json:"status"`
 		} `json:"feedback"`
-		IsCorrect bool `json:"is_correct"`
+		Status       string `json:"status"`
+		AttemptsUsed int    `json:"attempts_used"`
 	}
 
 	if err := json.NewDecoder(rec.Body).Decode(&response); err != nil {
 		t.Fatalf("failed to decode response: %v", err)
+	}
+
+	if response.Status != StatusInProgress {
+		t.Fatalf("expected status %s, got %s", StatusInProgress, response.Status)
+	}
+
+	if response.AttemptsUsed != 1 {
+		t.Fatalf("expected attempts_used 1, got %d", response.AttemptsUsed)
 	}
 
 	expected := []string{"correct", "present", "absent", "present", "absent"}
