@@ -2,11 +2,11 @@
 
 @theme {
     /* custom variables */
+    --color-primary: #f7f4ed;
 }
 
 @layer base {
     button {
         @apply hover:cursor-pointer;
     }
-
 }

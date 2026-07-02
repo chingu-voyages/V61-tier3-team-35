@@ -10,6 +10,6 @@ export default function Tile({ letter, status }) {
 
 
     return (
-        <div className={`uppercase  flex items-center justify-center text-2xl font-bold size-14 border  ${statuses[status]} bg-gray-50 ${letter ? "border-black border-2" : "border-gray-400"}`}>{letter}</div>
+        <div className={`uppercase  flex items-center justify-center text-2xl font-bold size-14 border  ${statuses[status]} bg-gray-50/50 ${letter ? "border-black border-2" : "border-gray-400"}`}>{letter}</div>
     )
 }
