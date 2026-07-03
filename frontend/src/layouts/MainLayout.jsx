@@ -6,7 +6,7 @@ import Footer from "../components/Footer";
 
 export default function MainLayout() {
     return (
-        <div>
+        <div className="bg-primary">
             <Header />
             <main className="min-h-[75vh]">
                 <Outlet />
