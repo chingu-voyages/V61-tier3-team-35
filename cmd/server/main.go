@@ -18,7 +18,7 @@ func main() {
 		port = "8080"
 	}
 
-	validWords, err := game.LoadWords("words/allowed.txt")
+	validWords, err := game.LoadWords("words/allowed-guess.txt")
 	if err != nil {
 		log.Fatalf("failed to load valid words: %v", err)
 	}
