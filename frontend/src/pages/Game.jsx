@@ -43,6 +43,8 @@ export default function () {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [error, setError] = useState("")
 
+    const API_BASE_URL = "https://wordle-grqh.onrender.com"
+
     useEffect(() => {
         if (!error) return;
 
@@ -168,7 +170,7 @@ export default function () {
             guessWord += newBoard[currRow][i].letter
         }
 
-        const response = await fetch("https://wordle-grqh.onrender.com/api/guess", {
+        const response = await fetch(`${API_BASE_URL}/api/guess`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -258,7 +260,7 @@ export default function () {
         resetGame()
 
 
-        const response = await fetch("https://wordle-grqh.onrender.com/api/daily-word", {
+        const response = await fetch(`${API_BASE_URL}/api/daily-word`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
