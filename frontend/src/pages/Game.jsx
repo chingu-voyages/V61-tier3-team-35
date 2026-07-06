@@ -9,6 +9,8 @@ import mockStatus from "../components/mockStatus"
 // Win / lose modal
 import WinModal from "../components/game/WinModal"
 import LoseModal from "../components/game/LoseModal"
+import ErrorModal from "../components/game/ErrorModal"
+import { ContactRound } from "lucide-react"
 
 // Empty tile 
 const emptyTile = {
@@ -39,6 +41,18 @@ export default function () {
     const [showWinModal, setShowWinModal] = useState(false)
     const [showLoseModal, setShowLoseModal] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [error, setError] = useState("")
+
+    useEffect(() => {
+        if (!error) return;
+
+        const timer = setTimeout(() => {
+            setError("")
+        }, 1500);
+
+        // clear time out
+        return () => clearTimeout(timer);
+    }, [error])
 
     useEffect(() => {
 
@@ -125,7 +139,12 @@ export default function () {
         if (currCol === 5 && currRow < 6) {
             setIsSubmitting(true)
             // Check the status of letters in guess word - api call
-            await checkGuess()
+            const success = await checkGuess()
+
+            if (!success) {
+                setIsSubmitting(false)
+                return;
+            }
 
             // Set col to 0 and move to next row
             setCurrCol(0)
@@ -160,6 +179,17 @@ export default function () {
         })
 
         const data = await response.json()
+
+
+        if (data?.error) {
+            if (data.error === "word is not in the accepted word list") {
+                setError("Word Not Found")
+            }
+            return false;
+        }
+        else {
+            setError("")
+        }
 
         const guessStatus = data?.feedback;
         const isCorrect = data?.is_correct;
@@ -201,6 +231,8 @@ export default function () {
                 setShowLoseModal(true)
             }
         }
+
+        return true;
 
     }
 
@@ -262,6 +294,7 @@ export default function () {
                 {gameStatus === "lost" && (
                     <div className="bg-gray-200 rounded-full p-1 px-2 text-sm font-semibold my-2">You Lose! 🥲</div>
                 )}
+                {error && (<ErrorModal error={error} />)}
                 <Keyboard activeKey={keyValue} keyboardStatuses={keyboardStatuses} handleKeyPress={handleKeyPress} />
             </div>
         </div>
