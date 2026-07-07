@@ -1,14 +1,10 @@
-// layouts/MainLayout.jsx
-
 import { Outlet } from "react-router-dom";
-import Header from "../components/Header";
 import Footer from "../components/Footer";
 
 export default function MainLayout() {
     return (
-        <div className="bg-primary">
-            <Header />
-            <main className="min-h-[75vh]">
+        <div className="bg-primary h-screen overflow-hidden">
+            <main className="">
                 <Outlet />
             </main>
             <Footer />
