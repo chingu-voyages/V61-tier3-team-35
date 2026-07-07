@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Board from "../components/Board/Board"
 import Keyboard from "../components/Keyboard/Keyboard"
 // using keyboard rows to check if pressed key should is valid
@@ -11,6 +11,9 @@ import WinModal from "../components/game/WinModal"
 import LoseModal from "../components/game/LoseModal"
 import ErrorModal from "../components/game/ErrorModal"
 import { ContactRound } from "lucide-react"
+
+// Header
+import Header from "../components/Header"
 
 // Empty tile 
 const emptyTile = {
@@ -44,6 +47,7 @@ export default function () {
     const [error, setError] = useState("")
 
     const API_BASE_URL = "https://wordle-grqh.onrender.com"
+
 
     useEffect(() => {
         if (!error) return;
@@ -178,9 +182,12 @@ export default function () {
             body: JSON.stringify({
                 guess: guessWord,
             }),
+            credentials: "include"
         })
 
         const data = await response.json()
+
+        console.log("data is:", data)
 
 
         if (data?.error) {
@@ -231,6 +238,8 @@ export default function () {
             if (currRow > 4) {
                 setGameStatus("lost")
                 setShowLoseModal(true)
+
+
             }
         }
 
@@ -283,22 +292,32 @@ export default function () {
 
 
     return (
-        <div className={`flex flex-col items-center relative z-0`}>
+        <div className="w-full relative">
             {/* overlay */}
             {(showLoseModal || showWinModal) && (<div className="bg-white/70 absolute inset-0 z-10"></div>)}
-            {showWinModal && (<WinModal onClose={() => { setShowWinModal(false) }} newGame={getNewWord} />)}
-            {showLoseModal && (<LoseModal onClose={() => { setShowLoseModal(false) }} newGame={getNewWord} />)}
-            <div className={`flex flex-col items-center justify-center ${gameStatus === "playing" ? "gap-10" : "gap-0"}`}>
-                <Board board={board} />
-                {gameStatus === "won" && (
-                    <div className="bg-gray-200 rounded-full p-1 px-2 text-sm font-semibold my-2">You Win! 🏆</div>
-                )}
-                {gameStatus === "lost" && (
-                    <div className="bg-gray-200 rounded-full p-1 px-2 text-sm font-semibold my-2">You Lose! 🥲</div>
-                )}
-                {error && (<ErrorModal error={error} />)}
-                <Keyboard activeKey={keyValue} keyboardStatuses={keyboardStatuses} handleKeyPress={handleKeyPress} />
-            </div>
+            <Header className="w-full"
+                action={
+                    <button className="px-4 py-1 text-white bg-black rounded-full hover:bg-gray-700 transition-colors duration-200 z-10" onClick={resetGame}>
+                        Restart the game
+                    </button>
+                }
+            />
+            <main className={`flex flex-col items-center z-0 min-h-[82vh] justify-center`}>
+                {showWinModal && (<WinModal onClose={() => { setShowWinModal(false) }} newGame={getNewWord}/>)}
+                {showLoseModal && (<LoseModal onClose={() => { setShowLoseModal(false) }} newGame={getNewWord}/>)}
+                <div className={`flex flex-col items-center justify-center ${gameStatus === "playing" ? "md:gap-12 gap-10" : "gap-0"} md:-mt-4`}>
+                    <Board board={board} />
+                    {gameStatus === "won" && (
+                        <div className="bg-gray-200 rounded-full p-1 px-2 text-sm font-semibold my-2">You Win! 🏆</div>
+                    )}
+                    {gameStatus === "lost" && (
+                        <div className="bg-gray-200 rounded-full p-1 px-2 text-sm font-semibold my-2">You Lose! 🥲</div>
+                    )}
+                    {error && (<ErrorModal error={error} />)}
+                    <Keyboard activeKey={keyValue} keyboardStatuses={keyboardStatuses} handleKeyPress={handleKeyPress} />
+                </div>
+            </main>
         </div>
+
     )
 }
