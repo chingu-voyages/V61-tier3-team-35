@@ -28,7 +28,7 @@ export default function LoseModal({ newGame, onClose }) {
     }, [newGame])
 
     return (
-        <dialog aria-labelledby="lose-title" open className="absolute z-20 bg-white top-1/4 left-1/4 w-80 rounded-md overflow-hidden shadow-2xl">
+        <dialog aria-labelledby="lose-title" open className="absolute z-20 bg-white top-1/4 left-1/2 -translate-x-1/2 w-80 rounded-md overflow-hidden shadow-2xl">
             <div className="w-full bg-green-100 font-bold text-center text-gray-700 py-3">
                 <button ref={closeButtonRef} onClick={onClose} className="absolute right-2 text-gray-500" aria-label="close modal" >
                     <X aria-hidden />
