@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Board from "../components/Board/Board"
 import Keyboard from "../components/Keyboard/Keyboard"
 // using keyboard rows to check if pressed key should is valid
@@ -47,6 +47,7 @@ export default function () {
     const [error, setError] = useState("")
 
     const API_BASE_URL = "https://wordle-grqh.onrender.com"
+
 
     useEffect(() => {
         if (!error) return;
@@ -237,6 +238,8 @@ export default function () {
             if (currRow > 4) {
                 setGameStatus("lost")
                 setShowLoseModal(true)
+
+
             }
         }
 
@@ -300,8 +303,8 @@ export default function () {
                 }
             />
             <main className={`flex flex-col items-center z-0 min-h-[82vh] justify-center`}>
-                {showWinModal && (<WinModal onClose={() => { setShowWinModal(false) }} newGame={getNewWord} />)}
-                {showLoseModal && (<LoseModal onClose={() => { setShowLoseModal(false) }} newGame={getNewWord} />)}
+                {showWinModal && (<WinModal onClose={() => { setShowWinModal(false) }} newGame={getNewWord}/>)}
+                {showLoseModal && (<LoseModal onClose={() => { setShowLoseModal(false) }} newGame={getNewWord}/>)}
                 <div className={`flex flex-col items-center justify-center ${gameStatus === "playing" ? "md:gap-12 gap-10" : "gap-0"} md:-mt-4`}>
                     <Board board={board} />
                     {gameStatus === "won" && (
