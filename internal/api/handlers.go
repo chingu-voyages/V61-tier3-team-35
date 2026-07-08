@@ -109,7 +109,7 @@ func (h *Handler) getOrSetClientID(w http.ResponseWriter, r *http.Request) strin
 	clientID := generateClientID()
 	sameSite := http.SameSiteLaxMode
 	secure := false
-	if r.TLS != nil && h.production {
+	if h.production {
 		secure = true
 		sameSite = http.SameSiteNoneMode
 	}
