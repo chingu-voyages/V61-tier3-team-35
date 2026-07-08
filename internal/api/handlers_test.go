@@ -9,7 +9,7 @@ import (
 )
 
 func TestEvaluateGuessHandler_MethodNotAllowed(t *testing.T) {
-	handler := NewHandler([]string{"apple"}, []string{"apple", "alley"})
+	handler := NewHandler([]string{"apple"}, []string{"apple", "alley"}, true)
 
 	req := httptest.NewRequest(http.MethodGet, "/api/guess", nil)
 	rec := httptest.NewRecorder()
@@ -22,7 +22,7 @@ func TestEvaluateGuessHandler_MethodNotAllowed(t *testing.T) {
 }
 
 func TestEvaluateGuessHandler_ReturnsFeedbackAndSetsClientCookie(t *testing.T) {
-	handler := NewHandler([]string{"apple"}, []string{"apple", "alley"})
+	handler := NewHandler([]string{"apple"}, []string{"apple", "alley"}, true)
 
 	body := bytes.NewBufferString(`{"guess":"alley"}`)
 	req := httptest.NewRequest(http.MethodPost, "/api/guess", body)

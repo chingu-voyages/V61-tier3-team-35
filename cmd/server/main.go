@@ -11,11 +11,23 @@ import (
 	"github.com/joho/godotenv"
 )
 
+type Config struct {
+	Port       string
+	Production bool
+}
+
 func main() {
 	godotenv.Load()
 	port := os.Getenv("PORT")
+	env := os.Getenv("ENV") == "production"
+
 	if port == "" {
 		port = "8080"
+	}
+
+	cfg := Config{
+		Port:       port,
+		Production: env,
 	}
 
 	validWords, err := game.LoadWords("words/allowed-guess.txt")
@@ -27,9 +39,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to load answers: %v", err)
 	}
-	log.Printf("Loaded %d words", len(answers))
 
-	handler := api.NewHandler(answers, validWords)
+	handler := api.NewHandler(answers, validWords, cfg.Production)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /admin/health", handlerReadiness)
@@ -37,7 +48,7 @@ func main() {
 	mux.HandleFunc("POST /api/guess", handler.EvaluateGuess)
 
 	srv := &http.Server{
-		Addr:    ":" + port,
+		Addr:    ":" + cfg.Port,
 		Handler: api.CorsMiddleware(mux),
 	}
 	log.Printf("Server started on port: %v", srv.Addr)
