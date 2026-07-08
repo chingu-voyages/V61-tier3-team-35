@@ -26,6 +26,7 @@ type Handler struct {
 	validGuesses map[string]struct{}
 	mu           sync.Mutex
 	games        map[string]PlayerGame
+	production   bool
 }
 
 type PlayerGame struct {
@@ -59,7 +60,7 @@ type GuessResponse struct {
 	TargetWord   string `json:"target_word,omitempty"`
 }
 
-func NewHandler(answers []string, validWords []string) *Handler {
+func NewHandler(answers []string, validWords []string, env bool) *Handler {
 	validGuesses := make(map[string]struct{})
 
 	for _, word := range validWords {
@@ -70,6 +71,7 @@ func NewHandler(answers []string, validWords []string) *Handler {
 		answers:      answers,
 		validGuesses: validGuesses,
 		games:        make(map[string]PlayerGame),
+		production:   env,
 	}
 }
 
@@ -98,20 +100,27 @@ func (h *Handler) savePlayerGame(clientID string, playerGame PlayerGame) {
 	h.games[clientID] = playerGame
 }
 
-func getOrSetClientID(w http.ResponseWriter, r *http.Request) string {
+func (h *Handler) getOrSetClientID(w http.ResponseWriter, r *http.Request) string {
 	cookie, err := r.Cookie(ClientIDCookie)
 	if err == nil && cookie.Value != "" {
 		return cookie.Value
 	}
 
 	clientID := generateClientID()
+	sameSite := http.SameSiteLaxMode
+	secure := false
+	if r.TLS != nil && h.production {
+		secure = true
+		sameSite = http.SameSiteNoneMode
+	}
 
 	http.SetCookie(w, &http.Cookie{
 		Name:     ClientIDCookie,
 		Value:    clientID,
 		Path:     "/",
+		Secure:   secure,
 		HttpOnly: true,
-		SameSite: http.SameSiteLaxMode,
+		SameSite: sameSite,
 		MaxAge:   60 * 60 * 24 * 30,
 	})
 
@@ -136,7 +145,7 @@ func (h *Handler) GetDailyWord(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	clientID := getOrSetClientID(w, r)
+	clientID := h.getOrSetClientID(w, r)
 	today := time.Now().Format(time.DateOnly)
 
 	h.mu.Lock()
@@ -188,7 +197,7 @@ func (h *Handler) EvaluateGuess(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	clientID := getOrSetClientID(w, r)
+	clientID := h.getOrSetClientID(w, r)
 	today := time.Now().Format(time.DateOnly)
 
 	h.mu.Lock()
