@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react"
 import Button from "../Button"
 import { X } from "lucide-react"
 
-export default function LoseModal({ newGame, onClose }) {
+export default function LoseModal({ newGame, onClose, targetWord }) {
 
     const newGameButtonRef = useRef(null);
     const closeButtonRef = useRef(null);
@@ -36,7 +36,7 @@ export default function LoseModal({ newGame, onClose }) {
                 <h1 id="lose-title" >You Lose! 🥲</h1>
             </div>
             <div className="flex flex-col items-center justify-center gap-6 px-5 py-8">
-                <div className="flex flex-col gap-2">The answer was: <span className="uppercase font-bold border border-dashed border-gray-400 p-2 text-center text-gray-700 bg-gray-100">apple</span></div>
+                <div className="flex flex-col gap-2">The answer was: <span className="uppercase font-bold border border-dashed border-gray-400 p-2 text-center text-gray-700 bg-gray-100">{targetWord}</span></div>
                 <p className="text-center font-semibold text-gray-600">Better luck next time! Click the button below to begin a new game.</p>
                 <div className="flex flex-col">
                     <Button ref={newGameButtonRef} onClick={newGame} text="new game" />

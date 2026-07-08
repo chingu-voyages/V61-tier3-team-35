@@ -40,11 +40,14 @@ export default function () {
     // Curr row and col
     const [currCol, setCurrCol] = useState(0)
     const [currRow, setCurrRow] = useState(0)
+
     const [gameStatus, setGameStatus] = useState("playing")
     const [showWinModal, setShowWinModal] = useState(false)
     const [showLoseModal, setShowLoseModal] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [error, setError] = useState("")
+    const [targetWord, setTargetWord] = useState("")
+
 
     const API_BASE_URL = "https://wordle-grqh.onrender.com"
 
@@ -194,11 +197,21 @@ export default function () {
             if (data.error === "word is not in the accepted word list") {
                 setError("Word Not Found")
             }
+            else {
+                setError("Game is Over")
+                setGameStatus("over")
+            }
             return false;
         }
         else {
             setError("")
         }
+
+
+        if (data?.attempts_used == 6) {
+            setTargetWord(data?.target_word)
+        }
+
 
         const guessStatus = data?.feedback;
         const isCorrect = data?.is_correct;
@@ -303,8 +316,8 @@ export default function () {
                 }
             />
             <main className={`flex flex-col items-center z-0 min-h-[82vh] justify-center`}>
-                {showWinModal && (<WinModal onClose={() => { setShowWinModal(false) }} newGame={getNewWord}/>)}
-                {showLoseModal && (<LoseModal onClose={() => { setShowLoseModal(false) }} newGame={getNewWord}/>)}
+                {showWinModal && (<WinModal onClose={() => { setShowWinModal(false) }} newGame={getNewWord} />)}
+                {showLoseModal && (<LoseModal targetWord={targetWord} onClose={() => { setShowLoseModal(false) }} newGame={getNewWord} />)}
                 <div className={`flex flex-col items-center justify-center ${gameStatus === "playing" ? "md:gap-12 gap-10" : "gap-0"} md:-mt-4`}>
                     <Board board={board} />
                     {gameStatus === "won" && (
@@ -312,6 +325,9 @@ export default function () {
                     )}
                     {gameStatus === "lost" && (
                         <div className="bg-gray-200 rounded-full p-1 px-2 text-sm font-semibold my-2">You Lose! 🥲</div>
+                    )}
+                    {gameStatus === "over" && (
+                        <div className="bg-gray-200 rounded-full p-1 px-2 text-sm font-semibold my-2">Game Over</div>
                     )}
                     {error && (<ErrorModal error={error} />)}
                     <Keyboard activeKey={keyValue} keyboardStatuses={keyboardStatuses} handleKeyPress={handleKeyPress} />
