@@ -35,11 +35,12 @@ type PlayerGame struct {
 }
 
 type DailyWord struct {
-	Date         string `json:"date"`
-	WordLength   int    `json:"word_length"`
-	MaxAttempts  int    `json:"max_attempts"`
-	Status       string `json:"status"`
-	AttemptsUsed int    `json:"attempts_used"`
+	Date         string   `json:"date"`
+	WordLength   int      `json:"word_length"`
+	MaxAttempts  int      `json:"max_attempts"`
+	Status       string   `json:"status"`
+	AttemptsUsed int      `json:"attempts_used"`
+	Guesses      []string `json:"guesses"`
 }
 
 type GuessRequest struct {
@@ -53,11 +54,12 @@ type GameState struct {
 }
 
 type GuessResponse struct {
-	Feedback     any    `json:"feedback"`
-	IsCorrect    bool   `json:"is_correct"`
-	Status       string `json:"status"`
-	AttemptsUsed int    `json:"attempts_used"`
-	TargetWord   string `json:"target_word,omitempty"`
+	Feedback     any      `json:"feedback"`
+	IsCorrect    bool     `json:"is_correct"`
+	Status       string   `json:"status"`
+	AttemptsUsed int      `json:"attempts_used"`
+	TargetWord   string   `json:"target_word,omitempty"`
+	Guesses      []string `json:"guesses,omitempty"`
 }
 
 func NewHandler(answers []string, validWords []string, env bool) *Handler {
@@ -161,6 +163,7 @@ func (h *Handler) GetDailyWord(w http.ResponseWriter, r *http.Request) {
 		MaxAttempts:  MaxAttempts,
 		Status:       playerGame.State.Status,
 		AttemptsUsed: playerGame.State.AttemptsUsed,
+		Guesses:      playerGame.State.Guesses,
 	}
 
 	respondWithJSON(w, http.StatusOK, response)
@@ -222,6 +225,7 @@ func (h *Handler) EvaluateGuess(w http.ResponseWriter, r *http.Request) {
 		IsCorrect:    result.IsCorrect,
 		Status:       StatusInProgress,
 		AttemptsUsed: playerGame.State.AttemptsUsed,
+		Guesses:      playerGame.State.Guesses,
 	}
 
 	if guess == dailyWord {
