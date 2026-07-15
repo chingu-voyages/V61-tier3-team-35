@@ -25,13 +25,23 @@ type Handler struct {
 	answers      []string
 	validGuesses map[string]struct{}
 	mu           sync.Mutex
-	games        map[string]PlayerGame
+	games        map[string]PlayerGames
 	production   bool
 }
 
-type PlayerGame struct {
+type PlayerGames struct {
+	DailyGame    DailyGame
+	PracticeGame PracticeGame
+}
+
+type DailyGame struct {
 	Date  string
 	State GameState
+}
+
+type PracticeGame struct {
+	TargetWord string
+	State      GameState
 }
 
 type DailyWord struct {
@@ -72,13 +82,24 @@ func NewHandler(answers []string, validWords []string, env bool) *Handler {
 	return &Handler{
 		answers:      answers,
 		validGuesses: validGuesses,
-		games:        make(map[string]PlayerGame),
+		games:        make(map[string]PlayerGames),
 		production:   env,
 	}
 }
 
-func newGameForDate(date string) PlayerGame {
-	return PlayerGame{
+func newPracticeGame(targetWord string) PracticeGame {
+	return PracticeGame{
+		TargetWord: targetWord,
+		State: GameState{
+			AttemptsUsed: 0,
+			Status:       StatusInProgress,
+			Guesses:      []string{},
+		},
+	}
+}
+
+func newDailyGame(date string) DailyGame {
+	return DailyGame{
 		Date: date,
 		State: GameState{
 			AttemptsUsed: 0,
@@ -88,18 +109,26 @@ func newGameForDate(date string) PlayerGame {
 	}
 }
 
-func (h *Handler) getOrCreatePlayerGame(clientID, today string) PlayerGame {
+func (h *Handler) getOrCreateDailyGame(clientID, today string) DailyGame {
 	playerGame, ok := h.games[clientID]
-	if !ok || playerGame.Date != today {
-		playerGame = newGameForDate(today)
+	if !ok || playerGame.DailyGame.Date != today {
+		playerGame.DailyGame = newDailyGame(today)
 		h.games[clientID] = playerGame
 	}
 
-	return playerGame
+	return playerGame.DailyGame
 }
 
-func (h *Handler) savePlayerGame(clientID string, playerGame PlayerGame) {
-	h.games[clientID] = playerGame
+func (h *Handler) savePlayerDailyGame(clientID string, dailyGame DailyGame) {
+	playerGame, ok := h.games[clientID]
+	if ok {
+		playerGame.DailyGame = dailyGame
+		h.games[clientID] = playerGame
+	} else {
+		h.games[clientID] = PlayerGames{
+			DailyGame: dailyGame,
+		}
+	}
 }
 
 func (h *Handler) getOrSetClientID(w http.ResponseWriter, r *http.Request) string {
@@ -151,7 +180,7 @@ func (h *Handler) GetDailyWord(w http.ResponseWriter, r *http.Request) {
 	today := time.Now().Format(time.DateOnly)
 
 	h.mu.Lock()
-	playerGame := h.getOrCreatePlayerGame(clientID, today)
+	playerGame := h.getOrCreateDailyGame(clientID, today)
 	h.mu.Unlock()
 
 	dailyWord := game.GetDailyWord(h.answers)
@@ -206,7 +235,7 @@ func (h *Handler) EvaluateGuess(w http.ResponseWriter, r *http.Request) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 
-	playerGame := h.getOrCreatePlayerGame(clientID, today)
+	playerGame := h.getOrCreateDailyGame(clientID, today)
 
 	if playerGame.State.Status != StatusInProgress {
 		respondWithError(w, http.StatusConflict,
@@ -237,7 +266,7 @@ func (h *Handler) EvaluateGuess(w http.ResponseWriter, r *http.Request) {
 		response.TargetWord = dailyWord
 	}
 
-	h.savePlayerGame(clientID, playerGame)
+	h.savePlayerDailyGame(clientID, playerGame)
 
 	respondWithJSON(w, http.StatusOK, response)
 }
