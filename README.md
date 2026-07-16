@@ -1,44 +1,108 @@
-# voyage-tasks
+# Letter Leap
 
-Your project's `readme` is as important to success as your code. For 
-this reason you should put as much care into its creation and maintenance
-as you would any other component of the application.
+Letter Leap is a browser-based word puzzle game where players have six attempts to guess a hidden five-letter word. It features both a daily challenge and an unlimited practice mode, with color-coded feedback after every guess.
 
-If you are unsure of what should go into the `readme` let this article,
-written by an experienced Chingu, be your starting point - 
-[Keys to a well written README](https://tinyurl.com/yk3wubft).
+Built as part of a Chingu Voyage, the project combines a React frontend with a Go backend that handles game logic, validation, and API responses.
 
-And before we go there's "one more thing"! Once you decide what to include
-in your `readme` feel free to replace the text we've provided here.
+```mermaid
+flowchart LR
 
-> Own it & Make it your Own!
+subgraph Client
+    P[Player]
+    UI[React + Vite]
+end
 
-## Team Documents
+subgraph Server
+    API[HTTP API]
+    GAME[Game Engine]
+    WORDS[(Word Lists)]
+end
 
-You may find these helpful as you work together to organize your project.
+P --> UI
+UI -->|HTTP / JSON| API
+API --> GAME
+GAME --> WORDS
+GAME --> API
+API --> UI
+UI --> P
+```
 
-- [Team Project Ideas](./docs/team_project_ideas.md)
-- [Team Decision Log](./docs/team_decision_log.md)
+## Features
 
-Meeting Agenda templates (located in the `/docs` directory in this repo):
+- 🟩 Daily challenge with a new word every day
+- ♾️ Unlimited practice mode
+- 🎯 Color-coded feedback for each guess
+- ⌨️ Full keyboard support
+- 📱 Responsive interface for desktop and mobile
+- ⚡ REST API powering gameplay and validation
 
-- Meeting - Voyage Kickoff --> ./docs/meeting-voyage_kickoff.docx
-- Meeting - App Vision & Feature Planning --> ./docs/meeting-vision_and_feature_planning.docx
-- Meeting - Sprint Retrospective, Review, and Planning --> ./docs/meeting-sprint_retrospective_review_and_planning.docx
-- Meeting - Sprint Open Topic Session --> ./docs/meeting-sprint_open_topic_session.docx
+## Tech Stack
 
-## Our Team
+**Frontend**
 
-Everyone on your team should add their name along with a link to their GitHub
-& optionally their LinkedIn profiles below. Do this in Sprint #1 to validate
-your repo access and to practice PR'ing with your team *before* you start
-coding!
+- React
+- Vite
+- Tailwind CSS
+
+**Backend**
+
+- Go
+- `net/http`
+- JSON REST API
+
+**Testing**
+
+- Go testing package
+
+## Project Structure
+
+```text
+.
+├── backend/    Go server, game logic, and API handlers
+└── frontend/   React application and UI components
+```
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 20+
+- Go 1.25+
+- npm
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### Backend
+
+From the project root:
+
+```bash
+go run ./backend/cmd/server
+```
+
+The backend runs on port `8080` by default.
+
+## Running Tests
+
+From the project root:
+
+```bash
+go test ./...
+```
+
+## Team
 
 - Camille Onoda: [GitHub](https://github.com/CamilleOnoda) / [LinkedIn](https://linkedin.com/in/camilleonoda)
-- Dara Offiong: .[GitHub](https://github.com/sladethedragonslayer) / [LinkedIn](https://www.linkedin.com/in/offiong-dara)
+- Dara Offiong: [GitHub](https://github.com/sladethedragonslayer) / [LinkedIn](https://www.linkedin.com/in/offiong-dara)
 - Yusuf Mohsen: [GitHub](https://github.com/yusufmohsiin) / [LinkedIn](https://www.linkedin.com/in/yusuf-mohsiin)
 - Nazeeha Bhoira: [GitHub](https://github.com/nazeeha-kb) / [LinkedIn](https://linkedin.com/in/nazeeha-kb)
-- Teammate name: [GitHub](https://github.com/ghaccountname) / [LinkedIn](https://linkedin.com/in/liaccountname)
 
-   ...
-- Teammate name #n: [GitHub](https://github.com/ghaccountname) / [LinkedIn](https://linkedin.com/in/liaccountname)
+## Acknowledgements
+
+This project was created by Team 35 during Chingu Voyage 61 as a collaborative full-stack development project.
