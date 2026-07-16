@@ -98,10 +98,11 @@ go test ./...
 
 ## Team
 
-- Camille Onoda: [GitHub](https://github.com/CamilleOnoda) / [LinkedIn](https://linkedin.com/in/camilleonoda)
-- Dara Offiong: [GitHub](https://github.com/sladethedragonslayer) / [LinkedIn](https://www.linkedin.com/in/offiong-dara)
-- Yusuf Mohsen: [GitHub](https://github.com/yusufmohsiin) / [LinkedIn](https://www.linkedin.com/in/yusuf-mohsiin)
-- Nazeeha Bhoira: [GitHub](https://github.com/nazeeha-kb) / [LinkedIn](https://linkedin.com/in/nazeeha-kb)
+| Member | Role | Links |
+|--------|------|-------|
+| **Camille Onoda** | Backend Developer | [GitHub](https://github.com/CamilleOnoda) • [LinkedIn](https://linkedin.com/in/camilleonoda) |
+| **Yusuf Mohsen** | UI/UX Designer | [GitHub](https://github.com/yusufmohsiin) • [LinkedIn](https://www.linkedin.com/in/yusuf-mohsiin) |
+| **Nazeeha Bhoira** | UI/UX Designer & Frontend Developer | [GitHub](https://github.com/nazeeha-kb) • [LinkedIn](https://linkedin.com/in/nazeeha-kb) |
 
 ## Acknowledgements
 
