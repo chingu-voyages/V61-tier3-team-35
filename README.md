@@ -1,8 +1,13 @@
-# Letter Leap
+# Quintle — Daily challenge. Unlimited practice. 
 
-Letter Leap is a browser-based word puzzle game where players have six attempts to guess a hidden five-letter word. It features both a daily challenge and an unlimited practice mode, with color-coded feedback after every guess.
+Quintle is a browser-based word puzzle game where players have six attempts to guess a hidden five-letter word. 
+<br>It features both a daily challenge and an unlimited practice mode, with color-coded feedback after every guess.
 
-Built as part of a Chingu Voyage, the project combines a React frontend with a Go backend that handles game logic, validation, and API responses.
+Built as part of a Chingu Voyage, the project combines a React frontend with a Go backend responsible for game logic, guess validation, session management, and a REST API.
+
+## Architecture
+
+The frontend communicates with a stateless HTTP API. Player progress is associated with a browser session, while the backend manages game state, validates guesses, and returns structured JSON responses.
 
 ```mermaid
 flowchart LR
@@ -29,12 +34,22 @@ UI --> P
 
 ## Features
 
-- 🟩 Daily challenge with a new word every day
+- 🟩 Daily challenge with a new puzzle every day
 - ♾️ Unlimited practice mode
-- 🎯 Color-coded feedback for each guess
+- 🎯 Color-coded feedback following Wordle-style rules
+- 🍪 Session persistence across page refreshes
 - ⌨️ Full keyboard support
 - 📱 Responsive interface for desktop and mobile
-- ⚡ REST API powering gameplay and validation
+- ⚡ REST API for gameplay and validation
+
+## API Endpoints
+
+| Method | Endpoint | Description |
+|---------|----------|-------------|
+| GET | /api/daily-word | Retrieve the current daily game |
+| POST | /api/guess | Submit a guess for the daily challenge |
+| POST | /api/practice/new-game | Start a new practice game |
+| POST | /api/practice/guess | Submit a practice guess |
 
 ## Tech Stack
 
@@ -47,8 +62,9 @@ UI --> P
 **Backend**
 
 - Go
-- `net/http`
+- net/http
 - JSON REST API
+- Cookie-based session management
 
 **Testing**
 
@@ -58,8 +74,13 @@ UI --> P
 
 ```text
 .
-├── backend/    Go server, game logic, and API handlers
-└── frontend/   React application and UI components
+├── backend/
+│   ├── cmd/          Application entry point
+│   ├── internal/     API handlers and game logic
+│   └── words/        Answer and dictionary lists
+└── frontend/
+    ├── src/
+    └── public/
 ```
 
 ## Getting Started
@@ -96,7 +117,7 @@ From the project root:
 go test ./...
 ```
 
-## Team
+## Contributors
 
 | Member | Role | Links |
 |--------|------|-------|
