@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from "react"
 import Board from "../components/Board/Board"
 import Keyboard from "../components/Keyboard/Keyboard"
+import { redirect, useNavigate } from "react-router-dom"
 // using keyboard rows to check if pressed key should is valid
 import keyboardRows from "../components/Keyboard/keyboardRows"
 import mockStatus from "../components/mockStatus"
@@ -14,6 +15,7 @@ import { ContactRound } from "lucide-react"
 
 // Header
 import Header from "../components/Header"
+
 
 // Empty tile 
 const emptyTile = {
@@ -40,8 +42,8 @@ export default function () {
     // Curr row and col
     const [currCol, setCurrCol] = useState(0)
     const [currRow, setCurrRow] = useState(0)
-
-    const [gameStatus, setGameStatus] = useState("playing")
+    const [dailyGameStatus, setDailyGameStatus] = useState("playing")
+    const [practiceGameStatus, setPracticeGameStatus] = useState("not-started")
     const [showWinModal, setShowWinModal] = useState(false)
     const [showLoseModal, setShowLoseModal] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -50,6 +52,14 @@ export default function () {
 
 
     const API_BASE_URL = "https://wordle-grqh.onrender.com"
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (dailyGameStatus === "over") {
+            navigate("/game-over")
+        }
+    }, [dailyGameStatus, navigate])
 
 
     useEffect(() => {
@@ -80,7 +90,7 @@ export default function () {
 
 
     const handleKeyPress = (key) => {
-        if (gameStatus !== "playing" || isSubmitting) return
+        if (dailyGameStatus !== "playing" || isSubmitting) return
 
         setKeyValue(key)
 
@@ -177,7 +187,12 @@ export default function () {
             guessWord += newBoard[currRow][i].letter
         }
 
-        const response = await fetch(`${API_BASE_URL}/api/guess`, {
+        const endpoint =
+            dailyGameStatus === "playing"
+                ? "/api/guess"
+                : "/api/practice/guess";
+
+        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -185,8 +200,8 @@ export default function () {
             body: JSON.stringify({
                 guess: guessWord,
             }),
-            credentials: "include"
-        })
+            credentials: "include",
+        });
 
         const data = await response.json()
 
@@ -198,8 +213,9 @@ export default function () {
                 setError("Word Not Found")
             }
             else {
+                setDailyGameStatus("over")
                 setError("Game is Over")
-                setGameStatus("over")
+                setDailyGameStatus("over")
             }
             return false;
         }
@@ -243,13 +259,15 @@ export default function () {
         setBoard(newBoard)
         setKeyboardStatuses(newKeyboardStatuses)
 
+        setDailyGameStatus("won")
         if (isCorrect) {
-            setGameStatus("won")
+            setDailyGameStatus("won")
             setShowWinModal(true)
         }
         else if (!isCorrect) {
+            setDailyGameStatus("lost")
             if (currRow > 4) {
-                setGameStatus("lost")
+                setDailyGameStatus("lost")
                 setShowLoseModal(true)
 
 
@@ -282,7 +300,7 @@ export default function () {
         resetGame()
 
 
-        const response = await fetch(`${API_BASE_URL}/api/daily-word`, {
+        const response = await fetch(`${API_BASE_URL}/api/practice/new-game`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -299,8 +317,9 @@ export default function () {
         setShowLoseModal(false)
         setShowWinModal(false)
         setCurrCol(0)
+        setDailyGameStatus("playing")
         setCurrRow(0)
-        setGameStatus("playing")
+        setDailyGameStatus("playing")
     }
 
 
@@ -318,15 +337,15 @@ export default function () {
             <main className={`flex flex-col items-center z-0 min-h-[82vh] justify-center`}>
                 {showWinModal && (<WinModal onClose={() => { setShowWinModal(false) }} newGame={getNewWord} />)}
                 {showLoseModal && (<LoseModal targetWord={targetWord} onClose={() => { setShowLoseModal(false) }} newGame={getNewWord} />)}
-                <div className={`flex flex-col items-center justify-center ${gameStatus === "playing" ? "md:gap-12 gap-10" : "gap-0"} md:-mt-4`}>
+                <div className={`flex flex-col items-center justify-center ${dailyGameStatus === "playing" ? "md:gap-12 gap-10" : "gap-0"} md:-mt-4`}>
                     <Board board={board} />
-                    {gameStatus === "won" && (
+                    {dailyGameStatus === "won" && (
                         <div className="bg-gray-200 rounded-full p-1 px-2 text-sm font-semibold my-2">You Win! 🏆</div>
                     )}
-                    {gameStatus === "lost" && (
+                    {dailyGameStatus === "lost" && (
                         <div className="bg-gray-200 rounded-full p-1 px-2 text-sm font-semibold my-2">You Lose! 🥲</div>
                     )}
-                    {gameStatus === "over" && (
+                    {dailyGameStatus === "over" && (
                         <div className="bg-gray-200 rounded-full p-1 px-2 text-sm font-semibold my-2">Game Over</div>
                     )}
                     {error && (<ErrorModal error={error} />)}
