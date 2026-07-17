@@ -7,7 +7,7 @@ Built as part of a Chingu Voyage, the project combines a React frontend with a G
 
 ## Architecture
 
-The frontend communicates with a stateless HTTP API. Player progress is associated with a browser session, while the backend manages game state, validates guesses, and returns structured JSON responses.
+The frontend communicates with a stateless HTTP API.Player progress is associated with a browser session, while the backend manages game state, validates guesses, and returns structured JSON responses.
 
 ```mermaid
 flowchart LR
@@ -69,6 +69,7 @@ UI --> P
 **Testing**
 
 - Go testing package
+- NVDA screen reader for accessibility
 
 ## Project Structure
 
@@ -123,7 +124,7 @@ go test ./...
 |--------|------|-------|
 | **Camille Onoda** | Backend Developer | [GitHub](https://github.com/CamilleOnoda) • [LinkedIn](https://linkedin.com/in/camilleonoda) |
 | **Yusuf Mohsen** | UI/UX Designer | [GitHub](https://github.com/yusufmohsiin) • [LinkedIn](https://www.linkedin.com/in/yusuf-mohsiin) |
-| **Nazeeha Bhoira** | UI/UX Designer & Frontend Developer | [GitHub](https://github.com/nazeeha-kb) • [LinkedIn](https://linkedin.com/in/nazeeha-kb) |
+| **Nazeeha Bhoira** | Frontend Developer | [GitHub](https://github.com/nazeeha-kb) • [LinkedIn](https://linkedin.com/in/nazeeha-kb) |
 
 ## Acknowledgements
 
