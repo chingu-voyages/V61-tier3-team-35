@@ -39,3 +39,13 @@ func GetDailyWord(words []string) string {
 
 	return dailyWord
 }
+
+func GetRandomWord(words []string) string {
+	seed := uint64(time.Now().UnixNano())
+	generator := rand.NewPCG(seed, 0)
+	random := rand.New(generator)
+	index := random.IntN(len(words))
+	randomWord := words[index]
+
+	return randomWord
+}

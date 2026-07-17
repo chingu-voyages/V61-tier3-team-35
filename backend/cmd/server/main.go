@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"os"
 
-	game "github.com/chingu-voyages/V61-tier3-team-35/game"
-	"github.com/chingu-voyages/V61-tier3-team-35/internal/api"
+	game "github.com/chingu-voyages/V61-tier3-team-35/backend/game"
+	"github.com/chingu-voyages/V61-tier3-team-35/backend/internal/api"
 
 	"github.com/joho/godotenv"
 )
@@ -29,13 +29,14 @@ func main() {
 		Port:       port,
 		Production: env,
 	}
+	log.Printf("ENV=%q Production=%v", os.Getenv("ENV"), cfg.Production)
 
-	validWords, err := game.LoadWords("words/allowed-guess.txt")
+	validWords, err := game.LoadWords("backend/words/allowed-guess.txt")
 	if err != nil {
 		log.Fatalf("failed to load valid words: %v", err)
 	}
 
-	answers, err := game.LoadWords("words/answers.txt")
+	answers, err := game.LoadWords("backend/words/answers.txt")
 	if err != nil {
 		log.Fatalf("failed to load answers: %v", err)
 	}
@@ -46,6 +47,8 @@ func main() {
 	mux.HandleFunc("GET /admin/health", handlerReadiness)
 	mux.HandleFunc("GET /api/daily-word", handler.GetDailyWord)
 	mux.HandleFunc("POST /api/guess", handler.EvaluateGuess)
+	mux.HandleFunc("GET /api/practice/new-game", handler.StartPracticeGame)
+	mux.HandleFunc("POST /api/practice/guess", handler.EvaluateGuess)
 
 	srv := &http.Server{
 		Addr:    ":" + cfg.Port,

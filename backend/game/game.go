@@ -18,7 +18,7 @@ const (
 	Absent  = "absent"
 )
 
-func EvaluateGuess(guess, target string) GuessResult {
+func CompareGuessToTarget(guess, target string) GuessResult {
 	guess = strings.ToLower(guess)
 	target = strings.ToLower(target)
 

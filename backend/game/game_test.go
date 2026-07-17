@@ -3,7 +3,7 @@ package game
 import "testing"
 
 func TestEvaluateGuess_AllCorrect(t *testing.T) {
-	result := EvaluateGuess("apple", "apple")
+	result := CompareGuessToTarget("apple", "apple")
 
 	if !result.IsCorrect {
 		t.Fatal("expected guess to be correct")
@@ -18,7 +18,7 @@ func TestEvaluateGuess_AllCorrect(t *testing.T) {
 }
 
 func TestEvaluateGuess_WithDuplicateLetters(t *testing.T) {
-	result := EvaluateGuess("alley", "apple")
+	result := CompareGuessToTarget("alley", "apple")
 
 	expected := []string{
 		Correct,
@@ -37,7 +37,7 @@ func TestEvaluateGuess_WithDuplicateLetters(t *testing.T) {
 }
 
 func TestEvaluateGuess_AllAbsent(t *testing.T) {
-	result := EvaluateGuess("crony", "apple")
+	result := CompareGuessToTarget("crony", "apple")
 
 	for _, feedback := range result.Feedback {
 		if feedback.Status != Absent {

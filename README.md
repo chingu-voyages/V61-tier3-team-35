@@ -1,44 +1,130 @@
-# voyage-tasks
+# Quintle — Daily challenge. Unlimited practice. 
 
-Your project's `readme` is as important to success as your code. For 
-this reason you should put as much care into its creation and maintenance
-as you would any other component of the application.
+Quintle is a browser-based word puzzle game where players have six attempts to guess a hidden five-letter word. 
+<br>It features both a daily challenge and an unlimited practice mode, with color-coded feedback after every guess.
 
-If you are unsure of what should go into the `readme` let this article,
-written by an experienced Chingu, be your starting point - 
-[Keys to a well written README](https://tinyurl.com/yk3wubft).
+Built as part of a Chingu Voyage, the project combines a React frontend with a Go backend responsible for game logic, guess validation, session management, and a REST API.
 
-And before we go there's "one more thing"! Once you decide what to include
-in your `readme` feel free to replace the text we've provided here.
+## Architecture
 
-> Own it & Make it your Own!
+The frontend communicates with a stateless HTTP API. Player progress is associated with a browser session, while the backend manages game state, validates guesses, and returns structured JSON responses.
 
-## Team Documents
+```mermaid
+flowchart LR
 
-You may find these helpful as you work together to organize your project.
+subgraph Client
+    P[Player]
+    UI[React + Vite]
+end
 
-- [Team Project Ideas](./docs/team_project_ideas.md)
-- [Team Decision Log](./docs/team_decision_log.md)
+subgraph Server
+    API[HTTP API]
+    GAME[Game Engine]
+    WORDS[(Word Lists)]
+end
 
-Meeting Agenda templates (located in the `/docs` directory in this repo):
+P --> UI
+UI -->|HTTP / JSON| API
+API --> GAME
+GAME --> WORDS
+GAME --> API
+API --> UI
+UI --> P
+```
 
-- Meeting - Voyage Kickoff --> ./docs/meeting-voyage_kickoff.docx
-- Meeting - App Vision & Feature Planning --> ./docs/meeting-vision_and_feature_planning.docx
-- Meeting - Sprint Retrospective, Review, and Planning --> ./docs/meeting-sprint_retrospective_review_and_planning.docx
-- Meeting - Sprint Open Topic Session --> ./docs/meeting-sprint_open_topic_session.docx
+## Features
 
-## Our Team
+- 🟩 Daily challenge with a new puzzle every day
+- ♾️ Unlimited practice mode
+- 🎯 Color-coded feedback following Wordle-style rules
+- 🍪 Session persistence across page refreshes
+- ⌨️ Full keyboard support
+- 📱 Responsive interface for desktop and mobile
+- ⚡ REST API for gameplay and validation
 
-Everyone on your team should add their name along with a link to their GitHub
-& optionally their LinkedIn profiles below. Do this in Sprint #1 to validate
-your repo access and to practice PR'ing with your team *before* you start
-coding!
+## API Endpoints
 
-- Camille Onoda: [GitHub](https://github.com/CamilleOnoda) / [LinkedIn](https://linkedin.com/in/camilleonoda)
-- Dara Offiong: .[GitHub](https://github.com/sladethedragonslayer) / [LinkedIn](https://www.linkedin.com/in/offiong-dara)
-- Yusuf Mohsen: [GitHub](https://github.com/yusufmohsiin) / [LinkedIn](https://www.linkedin.com/in/yusuf-mohsiin)
-- Nazeeha Bhoira: [GitHub](https://github.com/nazeeha-kb) / [LinkedIn](https://linkedin.com/in/nazeeha-kb)
-- Teammate name: [GitHub](https://github.com/ghaccountname) / [LinkedIn](https://linkedin.com/in/liaccountname)
+| Method | Endpoint | Description |
+|---------|----------|-------------|
+| GET | /api/daily-word | Retrieve the current daily game |
+| POST | /api/guess | Submit a guess for the daily challenge |
+| POST | /api/practice/new-game | Start a new practice game |
+| POST | /api/practice/guess | Submit a practice guess |
 
-   ...
-- Teammate name #n: [GitHub](https://github.com/ghaccountname) / [LinkedIn](https://linkedin.com/in/liaccountname)
+## Tech Stack
+
+**Frontend**
+
+- React
+- Vite
+- Tailwind CSS
+
+**Backend**
+
+- Go
+- net/http
+- JSON REST API
+- Cookie-based session management
+
+**Testing**
+
+- Go testing package
+
+## Project Structure
+
+```text
+.
+├── backend/
+│   ├── cmd/          Application entry point
+│   ├── internal/     API handlers and game logic
+│   └── words/        Answer and dictionary lists
+└── frontend/
+    ├── src/
+    └── public/
+```
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 20+
+- Go 1.25+
+- npm
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### Backend
+
+From the project root:
+
+```bash
+go run ./backend/cmd/server
+```
+
+The backend runs on port `8080` by default.
+
+## Running Tests
+
+From the project root:
+
+```bash
+go test ./...
+```
+
+## Contributors
+
+| Member | Role | Links |
+|--------|------|-------|
+| **Camille Onoda** | Backend Developer | [GitHub](https://github.com/CamilleOnoda) • [LinkedIn](https://linkedin.com/in/camilleonoda) |
+| **Yusuf Mohsen** | UI/UX Designer | [GitHub](https://github.com/yusufmohsiin) • [LinkedIn](https://www.linkedin.com/in/yusuf-mohsiin) |
+| **Nazeeha Bhoira** | UI/UX Designer & Frontend Developer | [GitHub](https://github.com/nazeeha-kb) • [LinkedIn](https://linkedin.com/in/nazeeha-kb) |
+
+## Acknowledgements
+
+This project was created by Team 35 during Chingu Voyage 61 as a collaborative full-stack development project.
