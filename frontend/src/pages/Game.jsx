@@ -60,6 +60,33 @@ export default function () {
             navigate("/game-over")
         }
     }, [dailyGameStatus, navigate])
+    useEffect(() => {
+        const savedGuesses = localStorage.getItem("previousGuesses");
+        if (!savedGuesses) return;
+        const guesses = JSON.parse(savedGuesses)
+
+        const newBoard = board.map(row => [...row]);
+
+        // rows (i) - guesses
+        // col (j) - letters
+
+        for (let i = 0; i < guesses.length; i++) {
+            // indexing through guesses
+            for (let j = 0; j < (guesses[i].feedback).length; j++) {
+
+                newBoard[i][j] = {
+                    letter: guesses[i].feedback[j].letter,
+                    status: guesses[i].feedback[j].status
+                }
+
+                setCurrRow(i + 1)
+            }
+        }
+
+        setBoard(newBoard)
+
+    }, [])
+
 
 
     useEffect(() => {
@@ -113,8 +140,7 @@ export default function () {
 
     const handleLetter = (key) => {
 
-        const newBoard = [...board]
-        newBoard[currRow] = [...newBoard[currRow]]
+        const newBoard = board.map(row => [...row]);
 
         if (keyboardRows.flat().includes(key) && currCol < 5) {
 
@@ -134,8 +160,7 @@ export default function () {
     // Backspace
     const handleBackspace = () => {
 
-        const newBoard = [...board]
-        newBoard[currRow] = [...newBoard[currRow]]
+        const newBoard = board.map(row => [...row]);
 
         if (currCol > 0) {
             // Clear the  tile
@@ -178,8 +203,7 @@ export default function () {
     // Check guess
     const checkGuess = async () => {
 
-        const newBoard = [...board]
-        newBoard[currRow] = [...newBoard[currRow]]
+        const newBoard = board.map(row => [...row]);
 
         const guess = newBoard[currRow];
         let guessWord = ""
@@ -205,7 +229,9 @@ export default function () {
 
         const data = await response.json()
 
-        console.log("data is:", data)
+        if (data.guesses) {
+            localStorage.setItem("previousGuesses", JSON.stringify(data.guesses))
+        }
 
 
         if (data?.error) {
@@ -319,7 +345,8 @@ export default function () {
         setCurrCol(0)
         setDailyGameStatus("playing")
         setCurrRow(0)
-        setDailyGameStatus("playing")
+        setGameStatus("playing")
+        localStorage.removeItem("previousGuesses");
     }
 
 
