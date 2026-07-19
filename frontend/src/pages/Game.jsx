@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react"
 import Board from "../components/Board/Board"
 import Keyboard from "../components/Keyboard/Keyboard"
 import { redirect, useNavigate } from "react-router-dom"
+
 // using keyboard rows to check if pressed key should is valid
 import keyboardRows from "../components/Keyboard/keyboardRows"
 import mockStatus from "../components/mockStatus"
@@ -10,6 +11,7 @@ import mockStatus from "../components/mockStatus"
 // Win / lose modal
 import WinModal from "../components/game/WinModal"
 import LoseModal from "../components/game/LoseModal"
+
 import ErrorModal from "../components/game/ErrorModal"
 import { ContactRound } from "lucide-react"
 
@@ -55,11 +57,28 @@ export default function () {
 
     const navigate = useNavigate();
 
+    // useEffect(() => {
+    //     if (dailyGameStatus !== "playing") {
+    //         navigate("/game-over")
+    //     }
+    // }, [dailyGameStatus, navigate])
+
     useEffect(() => {
-        if (dailyGameStatus === "over") {
-            navigate("/game-over")
-        }
-    }, [dailyGameStatus, navigate])
+        const fetchDailyWord = async () => {
+            const response = await fetch(`${API_BASE_URL}/api/daily-word`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            const data = await response.json();
+            console.log("daily word:", data);
+        };
+
+        fetchDailyWord();
+    }, []);
+
     useEffect(() => {
         const savedGuesses = localStorage.getItem("previousGuesses");
         if (!savedGuesses) return;
@@ -211,12 +230,8 @@ export default function () {
             guessWord += newBoard[currRow][i].letter
         }
 
-        const endpoint =
-            dailyGameStatus === "playing"
-                ? "/api/guess"
-                : "/api/practice/guess";
 
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        const response = await fetch(`${API_BASE_URL}/api/guess`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -227,7 +242,24 @@ export default function () {
             credentials: "include",
         });
 
+        // const endpoint =
+        //     dailyGameStatus === "playing"
+        //         ? "/api/guess"
+        //         : "/api/practice/guess";
+
+        // const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        //     method: "POST",
+        //     headers: {
+        //         "Content-Type": "application/json",
+        //     },
+        //     body: JSON.stringify({
+        //         guess: guessWord,
+        //     }),
+        //     credentials: "include",
+        // });
+
         const data = await response.json()
+        console.log("guess response",data)
 
         if (data.guesses) {
             localStorage.setItem("previousGuesses", JSON.stringify(data.guesses))
@@ -245,6 +277,7 @@ export default function () {
             }
             return false;
         }
+
         else {
             setError("")
         }
@@ -253,6 +286,7 @@ export default function () {
         if (data?.attempts_used == 6) {
             setTargetWord(data?.target_word)
         }
+
 
 
         const guessStatus = data?.feedback;
@@ -285,13 +319,11 @@ export default function () {
         setBoard(newBoard)
         setKeyboardStatuses(newKeyboardStatuses)
 
-        setDailyGameStatus("won")
         if (isCorrect) {
             setDailyGameStatus("won")
             setShowWinModal(true)
         }
         else if (!isCorrect) {
-            setDailyGameStatus("lost")
             if (currRow > 4) {
                 setDailyGameStatus("lost")
                 setShowLoseModal(true)
@@ -345,7 +377,7 @@ export default function () {
         setCurrCol(0)
         setDailyGameStatus("playing")
         setCurrRow(0)
-        setGameStatus("playing")
+        setDailyGameStatus("playing")
         localStorage.removeItem("previousGuesses");
     }
 
