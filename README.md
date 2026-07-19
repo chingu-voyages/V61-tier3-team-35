@@ -5,6 +5,10 @@ Quintle is a browser-based word puzzle game where players have six attempts to g
 
 Built as part of a Chingu Voyage, the project combines a React frontend with a Go backend responsible for game logic, guess validation, session management, and a REST API.
 
+## Live Link
+
+You can try out Quintle here: https://v61-tier3-team-35.netlify.app/
+
 ## Architecture
 
 The frontend communicates with a stateless HTTP API.Player progress is associated with a browser session, while the backend manages game state, validates guesses, and returns structured JSON responses.
