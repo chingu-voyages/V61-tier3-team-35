@@ -1,7 +1,7 @@
-# Quintle — Daily challenge. Unlimited practice. 
+# Quintle — Daily challenge.
 
 Quintle is a browser-based word puzzle game where players have six attempts to guess a hidden five-letter word. 
-<br>It features both a daily challenge and an unlimited practice mode, with color-coded feedback after every guess.
+<br>It features both a daily challenge, with color-coded feedback after every guess.
 
 Built as part of a Chingu Voyage, the project combines a React frontend with a Go backend responsible for game logic, guess validation, session management, and a REST API.
 
@@ -35,7 +35,6 @@ UI --> P
 ## Features
 
 - 🟩 Daily challenge with a new puzzle every day
-- ♾️ Unlimited practice mode
 - 🎯 Color-coded feedback following Wordle-style rules
 - 🍪 Session persistence across page refreshes
 - ⌨️ Full keyboard support
@@ -48,8 +47,6 @@ UI --> P
 |---------|----------|-------------|
 | GET | /api/daily-word | Retrieve the current daily game |
 | POST | /api/guess | Submit a guess for the daily challenge |
-| POST | /api/practice/new-game | Start a new practice game |
-| POST | /api/practice/guess | Submit a practice guess |
 
 ## Tech Stack
 
