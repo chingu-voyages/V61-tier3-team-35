@@ -151,7 +151,7 @@ func (h *Handler) getOrSetClientID(w http.ResponseWriter, r *http.Request) strin
 	return clientID
 }
 
-func (h *Handler) GetDailyWord(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) GetOrCreateDailyGame(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	if r.Method != http.MethodGet {
@@ -230,7 +230,7 @@ func (h *Handler) savePlayerPracticeGame(
 	h.games[clientID] = playerGames
 }
 
-func (h *Handler) StartPracticeGame(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) GetOrCreatePracticeGame(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	if r.Method != http.MethodGet {
 		respondWithError(w, http.StatusMethodNotAllowed, "method not allowed", nil)
