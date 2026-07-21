@@ -46,12 +46,12 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /admin/health", handlerReadiness)
 
-	mux.HandleFunc("GET /api/daily", handler.GetDailyWord)
+	mux.HandleFunc("GET /api/daily", handler.GetOrCreateDailyGame)
 	mux.HandleFunc("POST /api/daily/guess", handler.EvaluateGuess)
 
 	mux.HandleFunc("GET /api/practice", handler.GetOrCreatePracticeGame)
 	mux.HandleFunc("POST /api/practice/guess", handler.EvaluateGuess)
-	mux.HandleFunc("POST /api/practice", handler.CreateNewPracticeGame)
+	mux.HandleFunc("POST /api/practice", handler.StartNewPracticeGame)
 
 	srv := &http.Server{
 		Addr:    ":" + cfg.Port,
